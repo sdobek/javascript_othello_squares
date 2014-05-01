@@ -1,0 +1,96 @@
+@CHARSET "ISO-8859-1";
+
+div.board{
+	float:left;
+	width: 496px;
+	height: 506px;
+}
+
+div.scoreCount{
+	float:left;
+	width: 510px;
+	height: 496px;
+	margin-left: 20px;
+}
+
+div.blackScore{
+	float:left;
+	width: 250px;
+	height: 350px;
+	background-color:black;
+	font-size: 30px;
+    text-align: center;
+	color:white;
+	border: white solid 1px;
+}
+
+div.whiteScore{
+	float:left;
+	width: 250px;
+	height: 350px;
+	font-size: 30px;
+    text-align: center;
+	border: black solid 1px;
+}
+
+div.whoseTurn{
+	float: left;
+	width: 502px;
+	height: 50px;
+	font-size: 35px;
+    text-align: center;
+}
+
+div.skip{
+	float:left;
+	font-size: 40px;
+	padding-left: 30px;
+	padding-right: 30px;
+	background-color: #067001;
+	left: 176px;
+	position: relative;
+}
+
+div.skip:hover{
+	cursor: pointer;
+}
+
+div.new{
+	float:right;
+	font-size: 40px;
+	padding-left: 30px;
+	padding-right: 30px;
+	background-color: #067001;
+	top: 50px;
+	right: 110px;
+	position: relative;
+}
+
+div.new:hover{
+	cursor: pointer;
+}
+
+div.spot{
+	float: left;
+	width: 60px;
+	height: 60px;
+	background-color: #067001;
+	border: black solid 1px;
+}
+
+div.spotB{
+	float: left;
+	width: 60px;
+	height: 60px;
+	background-color: black;
+	border: black solid 1px;
+}
+
+div.spotW{
+	float: left;
+	width: 60px;
+	height: 60px;
+	background-color: white;
+	border: black solid 1px;
+}
+	

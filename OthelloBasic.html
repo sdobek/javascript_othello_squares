@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<link rel="stylesheet" type="text/css" href="OthelloBasic_files/TheBoard.css">
+<script type="text/javascript">
+	var classArr = new Array();
+	classArr[0] = new Array();
+	classArr[1] = new Array();
+	classArr[2] = new Array();
+	classArr[3] = new Array();
+	classArr[3][3] = "black";
+	classArr[3][4] = "white";
+	classArr[4] = new Array();
+	classArr[4][3] = "white";
+	classArr[4][4] = "black";
+	classArr[5] = new Array();
+	classArr[6] = new Array();
+	classArr[7] = new Array();
+	var color = "black";
+	var canMove = true;
+	var blackScore = 2;
+	var whiteScore = 2; 
+	var skipNum = 0;
+
+	function newGame(){
+		canMove = false;
+		classArr = new Array();
+		for (x = 0; x < 8; x++){
+			classArr[x] = new Array();
+			for (y = 0; y < 8; y++){
+				document.getElementById(getId(x,y)).style.background = "#067001";
+			}
+		}
+		classArr[3][3] = "black";
+		document.getElementById(getId(3,3)).style.background = "black";
+		classArr[3][4] = "white";
+		document.getElementById(getId(3,4)).style.background = "white";
+		classArr[4][3] = "white";
+		document.getElementById(getId(4,3)).style.background = "white";
+		classArr[4][4] = "black";
+		document.getElementById(getId(4,4)).style.background = "black";
+		document.getElementById('blackS').innerHTML = "2";
+		document.getElementById('whiteS').innerHTML = "2";
+		blackScore = 2;
+		whiteScore = 2; 
+		skipNum = 0;
+		color = "white";
+		nextPlayer();
+	}
+	
+	//classArr[0][0] = "black";
+	function getColor(x,y){
+		if ((isAdjacent(x,y) && canMove) && classArr[x][y] == null){
+			if (isLeft(x,y) || isRight(x,y) || isTop(x,y) || isBottom(x,y) 
+					|| isTL(x,y) || isTR(x,y) || isBL(x,y) || isBR(x,y)){
+				canMove = false;
+				skipNum = 0;
+				document.getElementById(getId(x,y)).style.background = color;
+				classArr[x][y] = color;
+				if (color == "black"){
+					blackScore += 1;
+				}
+				else{
+					whiteScore += 1;
+				}
+				flip(x, y);
+				if (isGameOver()){
+					gameOver();
+				}
+				else{
+					setTimeout("nextPlayer()", 500);
+				}
+			}
+		}
+		else{
+			//do nothing
+		}
+	}
+
+	function addSkip(){
+		if (canMove){
+			canMove = false;
+			skipNum += 1;
+			if (skipNum == 2){
+				gameOver();
+			}
+			else{
+				setTimeout("nextPlayer()", 500);
+			}
+		}
+	}
+
+	function isGameOver(){
+		if (blackScore + whiteScore == 64){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	 		
+	function gameOver(){
+		if (blackScore > whiteScore){
+			document.getElementById('turnBox').innerHTML = "Black Wins!";
+			document.getElementById('turnBox').style.background = "black";
+			document.getElementById('turnBox').style.color = "white";
+			document.getElementById('turnBox').style.border = "white solid 1px";
+		}
+		else if(whiteScore > blackScore){
+			document.getElementById('turnBox').innerHTML = "White Wins!";
+			document.getElementById('turnBox').style.background = "white";
+			document.getElementById('turnBox').style.color = "black";
+			document.getElementById('turnBox').style.border = "black solid 1px";
+		}
+		else {
+			document.getElementById('turnBox').innerHTML = "TIE!";
+			document.getElementById('turnBox').style.background = "#067001";
+			document.getElementById('turnBox').style.color = "black";
+			document.getElementById('turnBox').style.border = "#067001 solid 1px";
+		}
+	}
+
+	function nextPlayer(){
+		if (color == "black"){
+			color = "white";
+			document.getElementById('turnBox').innerHTML = "White's Turn";
+			document.getElementById('turnBox').style.background = "white";
+			document.getElementById('turnBox').style.color = "black";
+			document.getElementById('turnBox').style.border = "black solid 1px";
+		}
+		else {
+			color = "black";
+			document.getElementById('turnBox').innerHTML = "Black's Turn";
+			document.getElementById('turnBox').style.background = "black";
+			document.getElementById('turnBox').style.color = "white";
+			document.getElementById('turnBox').style.border = "white solid 1px";
+		}
+		canMove = true;
+	}				
+	
+	function getId(x,y){
+		x += '';
+		y += '';
+		if (x == "0" && y == "0"){
+			return "00";
+		}
+		return x+y;
+	}
+
+	function isAdjacent(x,y){
+		if (x != 0 && classArr[x-1][y] != null){
+			return true;
+		}
+		else if (x != 7 && classArr[x+1][y] != null){
+			return true;
+		} 
+		else if (y != 0 && classArr[x][y-1] != null){
+			return true;
+		}
+		else if (y != 7 && classArr[x][y+1] != null){
+			return true;
+		} 
+		else if (x != 0 && y != 0 && classArr[x-1][y-1] != null){
+			return true;
+		}
+		else if (x != 7 && y != 0 && classArr[x+1][y-1] != null){
+			return true;
+		} 
+		else if (x != 0 && y != 7 && classArr[x-1][y+1] != null){
+			return true;
+		}
+		else if (x != 7 && y != 7 && classArr[x+1][y+1] != null){
+			return true;
+		} 
+		else {
+			return false;
+		}
+	}
+
+	function flip(x, y){
+		//begins flipping	
+		var x2 = x;
+		var y2 = y;
+		if (isLeft(x, y)){ //left
+			for (z = (y-1); z >= 0; z--){
+				if (classArr[x][z] == color){
+					break;
+				}
+				document.getElementById(getId(x,z)).style.background = color;
+				classArr[x][z] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+			}
+		}
+
+		if (isRight(x, y)){ //right
+			for (z = (y+1); z <= 7; z++){
+				//return x;
+				if (classArr[x][z] == color){
+					break;
+				}
+				document.getElementById(getId(x,z)).style.background = color;
+				classArr[x][z] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+			}
+		}
+
+		if (isTop(x, y)){ //top
+			for (z = (x-1); z >= 0; z--){
+				if (classArr[z][y] == color){
+					break;
+				}
+				document.getElementById(getId(z,y)).style.background = color;
+				classArr[z][y] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+			}
+		}
+
+		if (isBottom(x, y)){ //bottom
+			for (z = (x+1); z <= 7; z++){
+				if (classArr[z][y] == color){
+					break;
+				}
+				document.getElementById(getId(z,y)).style.background = color;
+				classArr[z][y] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+			}
+		}
+
+		if (isTL(x,y)){
+			x2 = x-1;
+			y2 = y-1;
+			while (x2 >= 0 && y2 >= 0){
+				if (classArr[x2][y2] == color){
+					break;
+				}
+				document.getElementById(getId(x2,y2)).style.background = color;
+				classArr[x2][y2] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+				x2--;
+				y2--;
+			}
+		}
+
+		if (isTR(x,y)){
+			x2 = x-1;
+			y2 = y+1;
+			while (x2 >= 0 && y2 <= 7){
+				if (classArr[x2][y2] == color){
+					break;
+				}
+				document.getElementById(getId(x2,y2)).style.background = color;
+				classArr[x2][y2] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+				x2--;
+				y2++;
+			}
+		}
+
+		if (isBL(x,y)){
+			x2 = x+1;
+			y2 = y-1;
+			while (x2 <= 7 && y2 >= 0){
+				if (classArr[x2][y2] == color){
+					return x2;
+					break;
+				}
+				document.getElementById(getId(x2,y2)).style.background = color;
+				classArr[x2][y2] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+				x2++;
+				y2--;
+			}
+		}
+
+		if (isBR(x,y)){
+			x2 = x+1;
+			y2 = y+1;
+			while (x2 <= 7 && y2 <= 7){
+				if (classArr[x2][y2] == color){
+					break;
+				}
+				document.getElementById(getId(x2,y2)).style.background = color;
+				classArr[x2][y2] = color;
+				if (color == "black"){
+					blackScore += 1;
+					whiteScore -= 1;
+				}
+				else{
+					whiteScore += 1;
+					blackScore -= 1;
+				}
+				x2++;
+				y2++;
+			}
+		}
+		
+	}
+
+	function isLeft(x, y){
+		for (z = (y-1); z >= 0; z--){
+			if (classArr[x][z] == null){
+				return false;
+			}
+			if (classArr[x][z] == color){
+				if (z == y-1){
+					return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function isRight(x, y){
+		for (z = (y+1); z <= 7; z++){
+			if (classArr[x][z] == null){
+				return false;
+			}
+			if (classArr[x][z] == color){
+				if (z == y+1){
+					return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function isTop(x, y){
+		for (z = (x-1); z >= 0; z--){
+			if (classArr[z][y] == null){
+				return false;
+			}
+			if (classArr[z][y] == color){
+				if (z == x-1){
+					return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function isBottom(x, y){
+		for (z = (x+1); z <= 7; z++){
+			if (classArr[z][y] == null){
+				return false;
+			}
+			if (classArr[z][y] == color){
+				if (z == x+1){
+					return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function isTL(x,y){
+		var x2 = x-1;
+		var y2 = y-1;
+		while (x2 >= 0 && y2 >= 0){
+			if (classArr[x2][y2] == null){
+				return false;
+			}
+			if (classArr[x2][y2] == color){
+				if (x2 == (x-1) && y2 == (y-1)){
+					return false;
+				}
+				return true;
+			}
+			x2--;
+			y2--;
+		}
+	}
+
+	function isTR(x,y){
+		var x2 = x-1;
+		var y2 = y+1;
+		while (x2 >= 0 && y2 <= 7){
+			if (classArr[x2][y2] == null){
+				return false;
+			}
+			if (classArr[x2][y2] == color){
+				if (x2 == (x-1) && y2 == (y+1)){
+					return false;
+				}
+				return true;
+			}
+			x2--;
+			y2++;
+		}
+	}
+
+	function isBL(x,y){
+		var x2 = x+1;
+		var y2 = y-1;
+		while (x2 <= 7 && y2 >= 0){
+			if (classArr[x2][y2] == null){
+				return false;
+			}
+			if (classArr[x2][y2] == color){
+				if (x2 == (x+1) && y2 == (y-1)){
+					return false;
+				}
+				return true;
+			}
+			x2++;
+			y2--;
+		}
+	}
+
+	function isBR(x,y){
+		var x2 = x+1;
+		var y2 = y+1;
+		while (x2 <= 7 && y2 <= 7){
+			if (classArr[x2][y2] == null){
+				return false;
+			}
+			if (classArr[x2][y2] == color){
+				if (x2 == (x+1) && y2 == (y+1)){
+					return false;
+				}
+				return true;
+			}
+			x2++;
+			y2++;
+		}
+	}
+
+	function getBScore(){
+		document.getElementById('blackS').innerHTML = blackScore.toString();
+	}
+
+	function getWScore(){
+		document.getElementById('whiteS').innerHTML = whiteScore.toString();
+	}	
+
+	function instructionPopUp(){
+		window.open("instructions.html", "Instructions", 
+				"height = 500, width = 400, resizable = 0");
+	}
+	
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>OthelloSquares</title>
+</head>
+<body>
+	<div class="board">
+		<div id="00" class="spot" onclick="getColor(0,0); getBScore(); getWScore()"></div>
+		<div id="01" class="spot" onclick="getColor(0,1); getBScore(); getWScore()"></div>
+		<div id="02" class="spot" onclick="getColor(0,2); getBScore(); getWScore()"></div>
+		<div id="03" class="spot" onclick="getColor(0,3); getBScore(); getWScore()"></div>
+		<div id="04" class="spot" onclick="getColor(0,4); getBScore(); getWScore()"></div>
+		<div id="05" class="spot" onclick="getColor(0,5); getBScore(); getWScore()"></div>
+		<div id="06" class="spot" onclick="getColor(0,6); getBScore(); getWScore()"></div>
+		<div id="07" class="spot" onclick="getColor(0,7); getBScore(); getWScore()"></div>
+		
+		<div id="10" class="spot" onclick="getColor(1,0); getBScore(); getWScore()"></div>
+		<div id="11" class="spot" onclick="getColor(1,1); getBScore(); getWScore()"></div>
+		<div id="12" class="spot" onclick="getColor(1,2); getBScore(); getWScore()"></div>
+		<div id="13" class="spot" onclick="getColor(1,3); getBScore(); getWScore()"></div>
+		<div id="14" class="spot" onclick="getColor(1,4); getBScore(); getWScore()"></div>
+		<div id="15" class="spot" onclick="getColor(1,5); getBScore(); getWScore()"></div>
+		<div id="16" class="spot" onclick="getColor(1,6); getBScore(); getWScore()"></div>
+		<div id="17" class="spot" onclick="getColor(1,7); getBScore(); getWScore()"></div>
+		
+		<div id="20" class="spot" onclick="getColor(2,0); getBScore(); getWScore()"></div>
+		<div id="21" class="spot" onclick="getColor(2,1); getBScore(); getWScore()"></div>
+		<div id="22" class="spot" onclick="getColor(2,2); getBScore(); getWScore()"></div>
+		<div id="23" class="spot" onclick="getColor(2,3); getBScore(); getWScore()"></div>
+		<div id="24" class="spot" onclick="getColor(2,4); getBScore(); getWScore()"></div>
+		<div id="25" class="spot" onclick="getColor(2,5); getBScore(); getWScore()"></div>
+		<div id="26" class="spot" onclick="getColor(2,6); getBScore(); getWScore()"></div>
+		<div id="27" class="spot" onclick="getColor(2,7); getBScore(); getWScore()"></div>
+		
+		<div id="30" class="spot" onclick="getColor(3,0); getBScore(); getWScore()"></div>
+		<div id="31" class="spot" onclick="getColor(3,1); getBScore(); getWScore()"></div>
+		<div id="32" class="spot" onclick="getColor(3,2); getBScore(); getWScore()"></div>
+		<div id="33" class="spotB" onclick="getColor(3,3); getBScore(); getWScore()"></div>
+		<div id="34" class="spotW" onclick="getColor(3,4); getBScore(); getWScore()"></div>
+		<div id="35" class="spot" onclick="getColor(3,5); getBScore(); getWScore()"></div>
+		<div id="36" class="spot" onclick="getColor(3,6); getBScore(); getWScore()"></div>
+		<div id="37" class="spot" onclick="getColor(3,7); getBScore(); getWScore()"></div>
+		
+		<div id="40" class="spot" onclick="getColor(4,0); getBScore(); getWScore()"></div>
+		<div id="41" class="spot" onclick="getColor(4,1); getBScore(); getWScore()"></div>
+		<div id="42" class="spot" onclick="getColor(4,2); getBScore(); getWScore()"></div>
+		<div id="43" class="spotW" onclick="getColor(4,3); getBScore(); getWScore()"></div>
+		<div id="44" class="spotB" onclick="getColor(4,4); getBScore(); getWScore()"></div>
+		<div id="45" class="spot" onclick="getColor(4,5); getBScore(); getWScore()"></div>
+		<div id="46" class="spot" onclick="getColor(4,6); getBScore(); getWScore()"></div>
+		<div id="47" class="spot" onclick="getColor(4,7); getBScore(); getWScore()"></div>
+		
+		<div id="50" class="spot" onclick="getColor(5,0); getBScore(); getWScore()"></div>
+		<div id="51" class="spot" onclick="getColor(5,1); getBScore(); getWScore()"></div>
+		<div id="52" class="spot" onclick="getColor(5,2); getBScore(); getWScore()"></div>
+		<div id="53" class="spot" onclick="getColor(5,3); getBScore(); getWScore()"></div>
+		<div id="54" class="spot" onclick="getColor(5,4); getBScore(); getWScore()"></div>
+		<div id="55" class="spot" onclick="getColor(5,5); getBScore(); getWScore()"></div>
+		<div id="56" class="spot" onclick="getColor(5,6); getBScore(); getWScore()"></div>
+		<div id="57" class="spot" onclick="getColor(5,7); getBScore(); getWScore()"></div>
+		
+		<div id="60" class="spot" onclick="getColor(6,0); getBScore(); getWScore()"></div>
+		<div id="61" class="spot" onclick="getColor(6,1); getBScore(); getWScore()"></div>
+		<div id="62" class="spot" onclick="getColor(6,2); getBScore(); getWScore()"></div>
+		<div id="63" class="spot" onclick="getColor(6,3); getBScore(); getWScore()"></div>
+		<div id="64" class="spot" onclick="getColor(6,4); getBScore(); getWScore()"></div>
+		<div id="65" class="spot" onclick="getColor(6,5); getBScore(); getWScore()"></div>
+		<div id="66" class="spot" onclick="getColor(6,6); getBScore(); getWScore()"></div>
+		<div id="67" class="spot" onclick="getColor(6,7); getBScore(); getWScore()"></div>
+		
+		<div id="70" class="spot" onclick="getColor(7,0); getBScore(); getWScore()"></div>
+		<div id="71" class="spot" onclick="getColor(7,1); getBScore(); getWScore()"></div>
+		<div id="72" class="spot" onclick="getColor(7,2); getBScore(); getWScore()"></div>
+		<div id="73" class="spot" onclick="getColor(7,3); getBScore(); getWScore()"></div>
+		<div id="74" class="spot" onclick="getColor(7,4); getBScore(); getWScore()"></div>
+		<div id="75" class="spot" onclick="getColor(7,5); getBScore(); getWScore()"></div>
+		<div id="76" class="spot" onclick="getColor(7,6); getBScore(); getWScore()"></div>
+		<div id="77" class="spot" onclick="getColor(7,7); getBScore(); getWScore()"></div>
+		
+		<input onclick="instructionPopUp()" value="Instructions" style="float: left;" type="button">
+	</div>
+	<div class="scoreCount">
+		<div class="blackScore">
+			<p>BLACK SCORE:</p>
+			<p id="blackS" style="font-size:60px">2</p>
+		</div>
+		<div class="whiteScore">
+			<p>WHITE SCORE:</p>
+			<p id="whiteS" style="font-size:60px">2</p>
+		</div>
+		<div id="turnBox" style="background-color:black; color:white;
+			border: white solid 1px;" class="whoseTurn">
+			Black's Turn
+		</div>
+		
+		<div class="skip" onclick="addSkip()">SKIP</div>
+		<div class="new" onclick="newGame()">NEW GAME</div> 
+	</div>
+	
+
+</body></html>
